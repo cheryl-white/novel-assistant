@@ -4,7 +4,9 @@ import {
   getChaptersForNovel,
   getChatForNovel,
   loadAppData,
+  loadSession,
   saveAppData,
+  saveSession,
   type AppData,
   type AppSettings,
   type Chapter,
@@ -12,21 +14,51 @@ import {
   type Novel,
 } from '../lib/storage'
 
+function resolveInitialSelection(data: AppData) {
+  const session = loadSession()
+  const novelExists = session.selectedNovelId
+    ? data.novels.some((n) => n.id === session.selectedNovelId)
+    : false
+  const novelId = novelExists ? session.selectedNovelId : (data.novels[0]?.id ?? null)
+
+  if (!novelId) {
+    return { novelId: null, chapterId: null }
+  }
+
+  const list = getChaptersForNovel(data.chapters, novelId)
+  const chapterExists = session.selectedChapterId
+    ? list.some((c) => c.id === session.selectedChapterId)
+    : false
+
+  return {
+    novelId,
+    chapterId: chapterExists ? session.selectedChapterId : (list[0]?.id ?? null),
+  }
+}
+
 export function useNovelStore() {
-  const [data, setData] = useState<AppData>(() => loadAppData())
-  const [selectedNovelId, setSelectedNovelId] = useState<string | null>(
-    () => loadAppData().novels[0]?.id ?? null,
-  )
-  const [selectedChapterId, setSelectedChapterId] = useState<string | null>(() => {
-    const initial = loadAppData()
-    const novelId = initial.novels[0]?.id
-    if (!novelId) return null
-    return getChaptersForNovel(initial.chapters, novelId)[0]?.id ?? null
+  const [boot] = useState(() => {
+    const initialData = loadAppData()
+    const selection = resolveInitialSelection(initialData)
+    return { data: initialData, ...selection }
   })
+  const [data, setData] = useState<AppData>(() => boot.data)
+  const [selectedNovelId, setSelectedNovelId] = useState<string | null>(() => boot.novelId)
+  const [selectedChapterId, setSelectedChapterId] = useState<string | null>(() => boot.chapterId)
+  const [storageError, setStorageError] = useState<string | null>(null)
 
   useEffect(() => {
-    saveAppData(data)
+    try {
+      saveAppData(data)
+      setStorageError(null)
+    } catch {
+      setStorageError('本地存储空间不足或不可用，请导出备份后清理浏览器数据')
+    }
   }, [data])
+
+  useEffect(() => {
+    saveSession({ selectedNovelId, selectedChapterId })
+  }, [selectedNovelId, selectedChapterId])
 
   // 确保选中的章节有效且属于当前小说
   useEffect(() => {
@@ -378,6 +410,7 @@ export function useNovelStore() {
     novelChapters,
     novelChat,
     totalWordCount,
+    storageError,
     selectNovel,
     setSelectedChapterId,
     createNovel,

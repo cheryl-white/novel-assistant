@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AiChatPanel } from './components/AiChatPanel'
 import { EditorPanel } from './components/EditorPanel'
 import { ConfirmDialog } from './components/Modal'
@@ -32,6 +32,10 @@ function App() {
     setToast(msg)
     setTimeout(() => setToast(null), 3000)
   }
+
+  useEffect(() => {
+    if (store.storageError) showToast(store.storageError)
+  }, [store.storageError])
 
   const handleExtractOutline = async (format: OutlineFormat) => {
     if (!store.selectedChapter) return
