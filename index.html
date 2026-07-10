@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/app-icon.svg" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0"
+    />
+    <meta name="theme-color" content="#c45c26" />
+    <meta name="color-scheme" content="light dark" />
+
+    <!-- SEO 基础 -->
+    <title>小说助手 · AI 网文创作与卡文辅助工具</title>
+    <meta
+      name="description"
+      content="小说助手是面向网文作者的 AI 创作工具：章节管理、TXT/ZIP 导入、AI 提取文字/流程图大纲、剧情助手对话，帮助解决卡文问题。支持浏览器与安卓使用，数据本地保存。"
+    />
+    <meta
+      name="keywords"
+      content="小说助手,网文写作,AI写作,卡文,章节大纲,流程图大纲,TXT导入,小说创作工具,Novel Assistant"
+    />
+    <meta name="author" content="Novel Assistant" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <meta name="application-name" content="小说助手" />
+    <link rel="canonical" href="/" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:site_name" content="小说助手" />
+    <meta property="og:title" content="小说助手 · AI 网文创作与卡文辅助工具" />
+    <meta
+      property="og:description"
+      content="AI 辅助网文创作：章节管理、大纲提取、流程图预览、剧情助手，帮助作者持续写作。"
+    />
+    <meta property="og:url" content="/" />
+    <meta property="og:image" content="/app-icon.svg" />
+    <meta property="og:image:alt" content="小说助手应用图标" />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="小说助手 · AI 网文创作与卡文辅助工具" />
+    <meta
+      name="twitter:description"
+      content="AI 辅助网文创作：章节管理、大纲提取、流程图预览、剧情助手，帮助作者持续写作。"
+    />
+    <meta name="twitter:image" content="/app-icon.svg" />
+
+    <!-- PWA / iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="小说助手" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <!-- 结构化数据 -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "小说助手",
+        "alternateName": "Novel Assistant",
+        "description": "面向网文作者的 AI 创作辅助工具，支持章节管理、大纲提取、流程图与剧情助手。",
+        "applicationCategory": "ProductivityApplication",
+        "operatingSystem": "Web, Android",
+        "inLanguage": "zh-CN",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "CNY"
+        },
+        "featureList": [
+          "小说与章节管理",
+          "TXT / ZIP 导入",
+          "AI 纯文字大纲",
+          "AI 流程图大纲",
+          "AI 剧情助手",
+          "本地数据保存"
+        ]
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <!-- 无 JS 时的基础可抓取内容 -->
+    <noscript>
+      <main style="max-width: 40rem; margin: 2rem auto; padding: 0 1rem; font-family: sans-serif">
+        <h1>小说助手 · Novel Assistant</h1>
+        <p>
+          AI 辅助网文创作工具，帮助作者管理章节、提取大纲、解决卡文。请启用 JavaScript
+          后使用完整功能。
+        </p>
+      </main>
+    </noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
