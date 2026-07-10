@@ -1,6 +1,6 @@
 # 小说助手 · Novel Assistant
 
-AI 辅助网文创作工具，帮助作者解决「卡文」问题。数据保存在本地，支持浏览器（PWA）与安卓 App。
+AI 辅助网文创作工具，可以导入txt/zip等文件，傻瓜式的操作界面，内接ai,帮助作者解决「卡文」问题。数据保存在本地。
 
 ## 功能
 
@@ -55,4 +55,4 @@ npm run preview
 
 ## 技术栈
 
-React 19 · TypeScript · Vite 8 · Tailwind CSS 4 · Capacitor · PWA · Prettier · Husky
+React 19 · TypeScript · Vite 8 · Tailwind CSS 4 · Prettier · Husky
