@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
-  base: '/novel-assistant/',
+  base: '/',
   plugins: [react(), tailwindcss()],
   // 新增：让 Vite 忽略 index.html 里的资源处理
   build: {
