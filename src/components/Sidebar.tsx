@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { usePanelSwipe } from '../hooks/usePanelSwipe'
 import type { Chapter, Novel } from '../types'
 import { PanelToggle } from './PanelToggle'
 
@@ -12,6 +13,7 @@ interface SidebarProps {
   onSelectChapter: (chapterId: string) => void
   onCreateNovel: () => void
   onDeleteNovel: (novelId: string) => void
+  onRenameNovel: () => void
   onCreateChapter: () => void
   onDeleteChapter: (chapterId: string) => void
   onMoveChapter: (fromId: string, toId: string) => void
@@ -32,6 +34,7 @@ export function Sidebar({
   onSelectChapter,
   onCreateNovel,
   onDeleteNovel,
+  onRenameNovel,
   onCreateChapter,
   onDeleteChapter,
   onMoveChapter,
@@ -42,6 +45,11 @@ export function Sidebar({
   onToggleCollapse,
 }: SidebarProps) {
   const [dragId, setDragId] = useState<string | null>(null)
+  const swipe = usePanelSwipe({
+    side: 'left',
+    collapsed,
+    onToggle: onToggleCollapse,
+  })
 
   const novelChapters = chapters
     .filter((c) => c.novel_id === selectedNovelId)
@@ -49,7 +57,8 @@ export function Sidebar({
 
   return (
     <aside
-      className={`flex h-full shrink-0 flex-col border-r border-border bg-sidebar transition-[width] duration-200 ease-in-out dark:border-border-dark dark:bg-sidebar-dark ${
+      {...swipe}
+      className={`flex h-full shrink-0 touch-pan-y flex-col border-r border-border bg-sidebar transition-[width] duration-200 ease-in-out dark:border-border-dark dark:bg-sidebar-dark ${
         collapsed ? 'w-12' : 'w-64'
       }`}
     >
@@ -126,14 +135,24 @@ export function Sidebar({
                   我的小说
                 </p>
                 {selectedNovelId && (
-                  <button
-                    type="button"
-                    onClick={() => onDeleteNovel(selectedNovelId)}
-                    className="text-xs text-red-500 hover:text-red-600"
-                    title="删除当前小说"
-                  >
-                    删除
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={onRenameNovel}
+                      className="text-xs text-accent hover:text-accent-hover"
+                      title="修改书名"
+                    >
+                      改名
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onDeleteNovel(selectedNovelId)}
+                      className="text-xs text-red-500 hover:text-red-600"
+                      title="删除当前小说"
+                    >
+                      删除
+                    </button>
+                  </div>
                 )}
               </div>
               <ul className="space-y-0.5">

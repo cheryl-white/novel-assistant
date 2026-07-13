@@ -19,6 +19,7 @@ function App() {
   const [helpOpen, setHelpOpen] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [createNovelOpen, setCreateNovelOpen] = useState(false)
+  const [renameNovelOpen, setRenameNovelOpen] = useState(false)
   const [importTxtOpen, setImportTxtOpen] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState<{
     type: 'novel' | 'chapter'
@@ -94,6 +95,7 @@ function App() {
         onSelectChapter={store.setSelectedChapterId}
         onCreateNovel={() => setCreateNovelOpen(true)}
         onDeleteNovel={(id) => setDeleteTarget({ type: 'novel', id })}
+        onRenameNovel={() => setRenameNovelOpen(true)}
         onCreateChapter={() => store.selectedNovelId && store.createChapter(store.selectedNovelId)}
         onDeleteChapter={(id) => setDeleteTarget({ type: 'chapter', id })}
         onMoveChapter={store.moveChapter}
@@ -188,6 +190,19 @@ function App() {
           setCreateNovelOpen(false)
         }}
         onCancel={() => setCreateNovelOpen(false)}
+      />
+
+      <PromptModal
+        key={`rename-${store.selectedNovelId ?? 'none'}`}
+        open={renameNovelOpen}
+        title="修改书名"
+        placeholder="输入新的小说标题"
+        defaultValue={store.selectedNovel?.title ?? ''}
+        onConfirm={(title) => {
+          if (store.selectedNovelId) store.updateNovel(store.selectedNovelId, { title })
+          setRenameNovelOpen(false)
+        }}
+        onCancel={() => setRenameNovelOpen(false)}
       />
 
       <ConfirmDialog

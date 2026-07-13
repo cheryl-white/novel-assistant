@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
+  // Web (GitHub Pages) uses /novel-assistant/; Android sync overrides with --base ./
   base: '/novel-assistant/',
   plugins: [react(), tailwindcss()],
 

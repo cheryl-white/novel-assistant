@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type TouchEvent } from 'react'
 import { useDebouncedCallback } from '../hooks/useDebouncedCallback'
 import type { OutlineFormat } from '../lib/ai'
 import type { Chapter, Novel } from '../types'
@@ -39,6 +39,7 @@ export function EditorPanel({
   onToggleAiPanel,
 }: EditorPanelProps) {
   const [title, setTitle] = useState('')
+  const [novelTitle, setNovelTitle] = useState('')
   const [content, setContent] = useState('')
   const [outline, setOutline] = useState('')
   const [outlineFlowchart, setOutlineFlowchart] = useState('')
@@ -51,6 +52,7 @@ export function EditorPanel({
   useEffect(() => {
     if (!chapter || !novel) return
     setTitle(chapter.title)
+    setNovelTitle(novel.title)
     setContent(chapter.content)
     setOutline(chapter.outline)
     setOutlineFlowchart(chapter.outline_flowchart ?? '')
@@ -59,6 +61,10 @@ export function EditorPanel({
     setMainTab('content')
     setShowTotalOutline(false)
   }, [chapter?.id, novel?.id])
+
+  useEffect(() => {
+    if (novel) setNovelTitle(novel.title)
+  }, [novel?.title])
 
   useEffect(() => {
     if (!chapter) return
@@ -85,10 +91,22 @@ export function EditorPanel({
     onUpdateNovel({ total_outline: value })
   }, 600)
 
+  const debouncedSaveNovelTitle = useDebouncedCallback((value: string) => {
+    const trimmed = value.trim()
+    if (trimmed) onUpdateNovel({ title: trimmed })
+    setSaveStatus('saved')
+  }, 600)
+
   const handleTitle = (v: string) => {
     setTitle(v)
     setSaveStatus('saving')
     debouncedSaveChapter({ title: v })
+  }
+
+  const handleNovelTitle = (v: string) => {
+    setNovelTitle(v)
+    setSaveStatus('saving')
+    debouncedSaveNovelTitle(v)
   }
 
   const handleContent = (v: string) => {
@@ -114,9 +132,42 @@ export function EditorPanel({
     debouncedSaveNovelOutline(v)
   }
 
+  /** Edge swipe on the editor: open left/right panels when collapsed. */
+  const edgeTouchX = useRef(0)
+  const edgeTouchY = useRef(0)
+  const edgeActive = useRef<'left' | 'right' | null>(null)
+
+  const onEditorTouchStart = (e: TouchEvent) => {
+    const t = e.touches[0]
+    if (!t) return
+    const w = window.innerWidth
+    edgeTouchX.current = t.clientX
+    edgeTouchY.current = t.clientY
+    if (sidebarCollapsed && t.clientX <= 28) edgeActive.current = 'left'
+    else if (aiPanelCollapsed && t.clientX >= w - 28) edgeActive.current = 'right'
+    else edgeActive.current = null
+  }
+
+  const onEditorTouchEnd = (e: TouchEvent) => {
+    const side = edgeActive.current
+    edgeActive.current = null
+    if (!side) return
+    const t = e.changedTouches[0]
+    if (!t) return
+    const dx = t.clientX - edgeTouchX.current
+    const dy = t.clientY - edgeTouchY.current
+    if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy) * 1.4) return
+    if (side === 'left' && dx > 0) onToggleSidebar()
+    if (side === 'right' && dx < 0) onToggleAiPanel()
+  }
+
   if (!novel || !chapter) {
     return (
-      <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-paper dark:bg-paper-dark">
+      <main
+        className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-paper dark:bg-paper-dark"
+        onTouchStart={onEditorTouchStart}
+        onTouchEnd={onEditorTouchEnd}
+      >
         <header className="flex shrink-0 items-center gap-2 border-b border-border px-4 py-2 dark:border-border-dark">
           {sidebarCollapsed && (
             <button
@@ -156,7 +207,11 @@ export function EditorPanel({
   ]
 
   return (
-    <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-paper dark:bg-paper-dark">
+    <main
+      className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-paper dark:bg-paper-dark"
+      onTouchStart={onEditorTouchStart}
+      onTouchEnd={onEditorTouchEnd}
+    >
       <header className="shrink-0 border-b border-border px-6 py-3 dark:border-border-dark">
         {(sidebarCollapsed || aiPanelCollapsed) && (
           <div className="mb-2 flex items-center gap-2">
@@ -182,9 +237,24 @@ export function EditorPanel({
             )}
           </div>
         )}
-        <div className="flex items-center justify-between">
-          <p className="text-xs text-ink-muted dark:text-stone-500">当前小说：{novel.title}</p>
-          <span className="text-xs text-ink-muted dark:text-stone-600">
+        <div className="flex items-center justify-between gap-3">
+          <label className="flex min-w-0 flex-1 items-center gap-1.5 text-xs text-ink-muted dark:text-stone-500">
+            <span className="shrink-0">当前小说：</span>
+            <input
+              type="text"
+              value={novelTitle}
+              onChange={(e) => handleNovelTitle(e.target.value)}
+              onBlur={() => {
+                const trimmed = novelTitle.trim()
+                if (!trimmed && novel) setNovelTitle(novel.title)
+                else if (trimmed !== novelTitle) setNovelTitle(trimmed)
+              }}
+              className="min-w-0 flex-1 truncate rounded border border-transparent bg-transparent px-1 py-0.5 font-medium text-ink outline-none hover:border-border focus:border-accent dark:text-stone-200 dark:hover:border-border-dark"
+              aria-label="小说书名"
+              title="点击修改书名"
+            />
+          </label>
+          <span className="shrink-0 text-xs text-ink-muted dark:text-stone-600">
             {saveStatus === 'saving' ? '保存中…' : '已自动保存'}
           </span>
         </div>

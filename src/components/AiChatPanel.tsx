@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { usePanelSwipe } from '../hooks/usePanelSwipe'
 import type { ChatMessage } from '../types'
 import { PanelToggle } from './PanelToggle'
 
@@ -27,6 +28,11 @@ export function AiChatPanel({
 }: AiChatPanelProps) {
   const [input, setInput] = useState('')
   const bottomRef = useRef<HTMLDivElement>(null)
+  const swipe = usePanelSwipe({
+    side: 'right',
+    collapsed,
+    onToggle: onToggleCollapse,
+  })
 
   useEffect(() => {
     if (!collapsed) {
@@ -43,7 +49,8 @@ export function AiChatPanel({
 
   return (
     <aside
-      className={`flex h-full shrink-0 flex-col border-l border-border bg-sidebar transition-[width] duration-200 ease-in-out dark:border-border-dark dark:bg-sidebar-dark ${
+      {...swipe}
+      className={`flex h-full shrink-0 touch-pan-y flex-col border-l border-border bg-sidebar transition-[width] duration-200 ease-in-out dark:border-border-dark dark:bg-sidebar-dark ${
         collapsed ? 'w-12' : 'w-72 xl:w-80'
       }`}
     >

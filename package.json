@@ -11,7 +11,7 @@
     "format:check": "prettier --check .",
     "preview": "vite preview",
     "start": "vite preview --open",
-    "android:sync": "npm run build && npx cap sync android",
+    "android:sync": "tsc -b && vite build --base ./ && npx cap sync android",
     "android:open": "npx cap open android",
     "android:run": "npm run android:sync && npx cap run android",
     "prepare": "husky"
